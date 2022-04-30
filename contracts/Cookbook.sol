@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract CookbookBase {
+contract Cookbook {
     event IngredientCreated(uint256 ingredientId, bytes32 name, uint256 gene);
     event RecipeCreated(address owner, uint256 recipeId, bytes32 name, uint256 gene);
     event Transfer(address from, address to, uint256 tokenId);
@@ -14,7 +14,7 @@ contract CookbookBase {
     struct Recipe{
         uint256 gene;
         bytes32 name;
-        Ingredient[] ingredients;
+        uint256[] ingredientsGene;
         uint16[] ingredientsQuantity;
     }
 
@@ -48,12 +48,13 @@ contract CookbookBase {
         return newIngredientId;
     }
 
-    function createRecipe(uint256 _gene, bytes32 _name, Ingredient[] memory _ingredient, uint16[] memory _ingredientQuantity, address _owner) external returns(uint) {
+    function createRecipe(uint256 _gene, bytes32 _name, uint256[] memory _ingredientsGene, uint16[] memory _ingredientsQuantity, address _owner) external returns(uint) {
+        require(_ingredientsGene.length == _ingredientsQuantity.length, "createRecipe fail, ingredient and quantity length are different");
         Recipe memory _recipe = Recipe({
             gene: _gene,
             name: _name,
-            ingredients: _ingredient,
-            ingredientsQuantity: _ingredientQuantity
+            ingredientsGene: _ingredientsGene,
+            ingredientsQuantity: _ingredientsQuantity
         });
 
         recipes.push(_recipe);
@@ -67,10 +68,10 @@ contract CookbookBase {
         return newRecipeId;
     }
 
-    function getRecipe(uint256 _id) external view returns(bytes32 name, Ingredient[] memory ingredient, uint16[] memory ingredientQuantity, uint256 gene){
+    function getRecipe(uint256 _id) external view returns(bytes32 name, uint256[] memory ingredientsGene, uint16[] memory ingredientQuantity, uint256 gene){
         Recipe storage recipe = recipes[_id];
         name = bytes32(recipe.name);
-        ingredient = recipe.ingredients;
+        ingredientsGene = recipe.ingredientsGene;
         ingredientQuantity = recipe.ingredientsQuantity;
         gene = uint256(recipe.gene);
     }
