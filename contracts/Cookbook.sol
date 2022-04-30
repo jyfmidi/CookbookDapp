@@ -2,18 +2,18 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Cookbook {
-    event IngredientCreated(uint256 ingredientId, bytes32 name, uint256 gene);
-    event RecipeCreated(address owner, uint256 recipeId, bytes32 name, uint256 gene);
+    event IngredientCreated(uint256 ingredientId, string name, uint256 gene);
+    event RecipeCreated(address owner, uint256 recipeId, string name, uint256 gene);
     event Transfer(address from, address to, uint256 tokenId);
 
     struct Ingredient{
         uint256 gene;
-        bytes32 name;
+        string name;
     }
 
     struct Recipe{
         uint256 gene;
-        bytes32 name;
+        string name;
         uint256[] ingredientsGene;
         uint16[] ingredientsQuantity;
     }
@@ -33,7 +33,7 @@ contract Cookbook {
         emit Transfer(_from, _to, _tokenId);
     }
 
-    function createIngredient(uint256 _gene, bytes32 _name) external returns(uint) {
+    function createIngredient(uint256 _gene, string memory _name) external returns(uint) {
         Ingredient memory _ingredient = Ingredient({
             gene: _gene,
             name: _name
@@ -48,7 +48,7 @@ contract Cookbook {
         return newIngredientId;
     }
 
-    function createRecipe(uint256 _gene, bytes32 _name, uint256[] memory _ingredientsGene, uint16[] memory _ingredientsQuantity, address _owner) external returns(uint) {
+    function createRecipe(uint256 _gene, string memory _name, uint256[] memory _ingredientsGene, uint16[] memory _ingredientsQuantity, address _owner) external returns(uint) {
         require(_ingredientsGene.length == _ingredientsQuantity.length, "createRecipe fail, ingredient and quantity length are different");
         Recipe memory _recipe = Recipe({
             gene: _gene,
@@ -68,9 +68,9 @@ contract Cookbook {
         return newRecipeId;
     }
 
-    function getRecipe(uint256 _id) external view returns(bytes32 name, uint256[] memory ingredientsGene, uint16[] memory ingredientQuantity, uint256 gene){
+    function getRecipe(uint256 _id) external view returns(string memory name, uint256[] memory ingredientsGene, uint16[] memory ingredientQuantity, uint256 gene){
         Recipe storage recipe = recipes[_id];
-        name = bytes32(recipe.name);
+        name = recipe.name;
         ingredientsGene = recipe.ingredientsGene;
         ingredientQuantity = recipe.ingredientsQuantity;
         gene = uint256(recipe.gene);
@@ -81,7 +81,7 @@ contract Cookbook {
     }
 
     function totalSupply() public view returns(uint){
-        return recipes.length - 1;
+        return recipes.length;
     }
 
     function recipesOfOwner(address _owner) external view returns(uint256[] memory ownerRecipes){
